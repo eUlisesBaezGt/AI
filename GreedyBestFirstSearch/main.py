@@ -8,6 +8,7 @@ class Graph:
         if destiny not in self.content:
             self.content[destiny] = []
         self.content[origin].append((destiny, weight))
+        self.content[destiny].append((origin, weight))
 
     def view_all(self):
         print("\n\nGraph:\n------")
@@ -30,23 +31,26 @@ def greedy_best_first_search(graph, heuristics, start="Neamt", goal="Bucharest")
         if current == goal:
             return path
 
-        # print(f"Current: {current}")
+        print(f"Current: {current}")
 
         # Get children
         for node in graph.content[current]:
             if node[0] not in children:
                 children.append(node[0])
-            # print(f"Children: {children}")
-            # print(f"Heuristic for {node[0]}: {heuristic} ")
+                for h in heuristics.content[node[0]]:
+                    if h[0] == goal:
+                        heuristic = int(h[1])
+            print(f"Children: {children}")
+            print(f"Heuristic for {node[0]}: {heuristic} ")
 
         if len(children) == 0:
             return "No path found."
 
         # Get the child with the lowest heuristic with lambda function
-        sorted_heuristics = sorted(children, key=lambda x: int(heuristics.content[x][0][1]))
-        # print(f"Sorted Heuristics: {sorted_heuristics}")
+        sorted_heuristics = sorted(children, key=lambda x: int(heuristics.content[x][0][1])) # CHECAR PARA EL 0
+        print(f"Sorted Heuristics: {sorted_heuristics}")
         child_with_lowest_heuristic = sorted_heuristics[0]
-        # print(f"Child with lowest heuristic: {child_with_lowest_heuristic}")
+        print(f"Child with lowest heuristic: {child_with_lowest_heuristic}")
         path.append(child_with_lowest_heuristic)
 
 
@@ -70,6 +74,9 @@ def main():
     path = greedy_best_first_search(graph, heuristics)
 
     print(f"Path: {path}")
+
+    # graph.view_all()
+    # heuristics.view_all()
 
 
 if __name__ == "__main__":
