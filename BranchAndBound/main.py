@@ -16,13 +16,22 @@ def BranchAndBound(graph, heuristics, start="Neamt", goal="Bucharest"):
         return [start]
 
     frontier = [start]
-    explored = []
     path = []
 
-    path.append(start)
-
     while frontier:
-        
+        current = frontier.pop(0)
+        path.append(current)
+
+        for neighbor, weight in graph.content[current]:
+            if neighbor == goal:
+                path.append(neighbor)
+                return path
+            frontier.append(neighbor)
+
+        for node, weight in heuristics.content[current]:
+            if node == goal:
+                path.append(node)
+                return path
 
 
 def main():
