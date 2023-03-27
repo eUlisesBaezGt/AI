@@ -15,6 +15,31 @@ def WeightedAStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
     if start == goal:
         return [start]
 
+    frontier = [start]
+    explored = []
+    path = []
+
+    path.append(start)
+
+    while frontier:
+
+        current = frontier.pop(0)
+        explored.append(current)
+
+        for neighbor, weight in graph.content[current]:
+            if neighbor not in explored:
+                frontier.append(neighbor)
+                path.append(neighbor)
+                if goal == neighbor:
+                    break
+
+        if goal in frontier:
+            break
+
+    return path
+
+    
+
 def main():
     graph = Graph()
     with open("data.txt") as file:
