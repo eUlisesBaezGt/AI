@@ -1,6 +1,6 @@
 class Graph:
     def __init__(self):
-        self.content = dict()
+        self.content = {}
 
     def new_edge(self, origin, destiny, weight):
         if origin not in self.content:
@@ -9,9 +9,9 @@ class Graph:
             self.content[destiny] = []
         self.content[origin].append((destiny, weight))
         self.content[destiny].append((origin, weight))
-        
 
-def AStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
+
+def AStarSearch(graph, heuristics, start="Neamt", goal="Bucharest"):
     if start == goal:
         return [start]
 
@@ -39,7 +39,6 @@ def AStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
                         return path
     return path
 
-    
 
 def main():
     graph = Graph()
@@ -58,7 +57,7 @@ def main():
         origin, destiny, weight = lines[i].split()
         heuristics.new_edge(origin, destiny, weight)
 
-    path = AStarSeach(graph, heuristics)
+    path = AStarSearch(graph, heuristics)
 
     print(f"Path: {path}")
 

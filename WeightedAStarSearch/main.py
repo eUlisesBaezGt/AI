@@ -1,6 +1,6 @@
 class Graph:
     def __init__(self):
-        self.content = dict()
+        self.content = {}
 
     def new_edge(self, origin, destiny, weight):
         if origin not in self.content:
@@ -9,9 +9,9 @@ class Graph:
             self.content[destiny] = []
         self.content[origin].append((destiny, weight))
         self.content[destiny].append((origin, weight))
-        
 
-def WeightedAStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
+
+def WeightedAStarSearch(graph, heuristics, start="Neamt", goal="Bucharest"):
     if start == goal:
         return [start]
 
@@ -22,7 +22,6 @@ def WeightedAStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
     path.append(start)
 
     while frontier:
-
         current = frontier.pop(0)
         explored.append(current)
 
@@ -38,7 +37,6 @@ def WeightedAStarSeach(graph, heuristics, start="Neamt", goal="Bucharest"):
 
     return path
 
-    
 
 def main():
     graph = Graph()
@@ -57,7 +55,7 @@ def main():
         origin, destiny, weight = lines[i].split()
         heuristics.new_edge(origin, destiny, weight)
 
-    path = WeightedAStarSeach(graph, heuristics)
+    path = WeightedAStarSearch(graph, heuristics)
 
     print(f"Path: {path}")
 

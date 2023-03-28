@@ -1,6 +1,6 @@
 class Graph:
     def __init__(self):
-        self.content = dict()
+        self.content = {}
 
     def new_edge(self, origin, destiny, weight):
         if origin not in self.content:
@@ -9,12 +9,12 @@ class Graph:
             self.content[destiny] = []
         self.content[origin].append((destiny, weight))
         self.content[destiny].append((origin, weight))
-        
+
 
 def greedy_best_first_search(graph, heuristics, start="Neamt", goal="Bucharest"):
     if start == goal:
         return [start]
-    
+
     frontier = [start]
     explored = []
     path = []
