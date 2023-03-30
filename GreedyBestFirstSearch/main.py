@@ -43,7 +43,6 @@ def greedy_best_first_search(graph, heuristics, start, goal):
     return None
 
 
-
 def main():
     graph = Graph()
     with open("data.txt") as file:
