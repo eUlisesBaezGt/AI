@@ -60,7 +60,7 @@ def main():
         origin, destiny, weight = lines[i].split()
         heuristics.new_edge(origin, destiny, weight)
 
-    path = greedy_best_first_search(graph, heuristics, "Arad", "Bucharest")
+    path = greedy_best_first_search(graph, heuristics, "Timisoara", "Bucharest")
 
     print(f"Path: {path}")
 
