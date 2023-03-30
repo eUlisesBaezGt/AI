@@ -11,33 +11,8 @@ class Graph:
         self.content[destiny].append((origin, weight))
 
 
-def AStarSearch(graph, heuristics, start="Neamt", goal="Bucharest"):
-    if start == goal:
-        return [start]
-
-    frontier = [start]
-    explored = []
-    path = []
-
-    path.append(start)
-
-    while frontier:
-        current = frontier.pop(0)
-        explored.append(current)
-
-        for node, weight in graph.content[current]:
-            if node not in explored:
-                frontier.append(node)
-                path.append(node)
-
-                if node == goal:
-                    return path
-
-                for node2, weight2 in heuristics.content[node]:
-                    if node2 == goal:
-                        path.append(node2)
-                        return path
-    return path
+def AStarSearch(graph, heuristics, start="Arad", goal="Bucharest"):
+    
 
 
 def main():
