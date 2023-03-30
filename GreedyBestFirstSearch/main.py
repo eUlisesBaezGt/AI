@@ -11,27 +11,37 @@ class Graph:
         self.content[destiny].append((origin, weight))
 
 
-def greedy_best_first_search(graph, heuristics, start="Neamt", goal="Bucharest"):
+def greedy_best_first_search(graph, heuristics, start, goal):
     if start == goal:
         return [start]
 
-    frontier = [start]
-    explored = []
-    path = []
+    frontier = []
+    explored = set()
+    parents = {}
+
+    frontier.append(start)
+    parents[start] = None
 
     while frontier:
-        node = frontier.pop(0)
-        explored.append(node)
-        path.append(node)
-
-        if node == goal:
-            return path
-
-        for destiny, weight in graph.content[node]:
-            if destiny not in explored and destiny not in frontier:
-                frontier.append(destiny)
-
         frontier.sort(key=lambda x: heuristics.content[x][0][1])
+        current = frontier.pop(0)
+
+        if current == goal:
+            path = []
+            while current is not None:
+                path.append(current)
+                current = parents[current]
+            return path[::-1]
+
+        explored.add(current)
+
+        for neighbor, _ in graph.content[current]:
+            if neighbor not in explored and neighbor not in frontier:
+                frontier.append(neighbor)
+                parents[neighbor] = current
+
+    return None
+
 
 
 def main():
@@ -51,7 +61,7 @@ def main():
         origin, destiny, weight = lines[i].split()
         heuristics.new_edge(origin, destiny, weight)
 
-    path = greedy_best_first_search(graph, heuristics)
+    path = greedy_best_first_search(graph, heuristics, "Arad", "Bucharest")
 
     print(f"Path: {path}")
 
