@@ -11,26 +11,29 @@ class Graph:
         self.content[destiny].append((origin, weight))
 
 
-def BeamSearch(graph, heuristics, start="Neamt", goal="Bucharest"):
-    if start == goal:
-        return [start]
-
-    frontier = [start]
-    explored = []
-    path = []
-
-    path.append(start)
+def BeamSearch(graph, heuristics, start="Arad", goal="Bucharest"):
+    k = int(input("Enter the number of nodes to be expanded: "))
+    frontier = [(0, start, [])]
+    explored = set()
 
     while frontier:
+        frontier.sort(key=lambda node: node[0])
         current = frontier.pop(0)
-        explored.append(current)
 
-        for neighbor, weight in graph.content[current]:
-            if neighbor not in explored:
-                path.append(neighbor)
-                if neighbor == goal:
-                    return path
-                frontier.append(neighbor)
+        if current[1] == goal:
+            return current[2] + [current[1]]
+
+        if current[1] not in explored:
+            explored.add(current[1])
+            for next_node, _ in graph.content[current[1]]:
+                for i in graph.content[current[1]]:
+                    if i[0] == next_node:
+                        cost = current[0] + int(i[1])
+                frontier.append((cost, next_node, current[2] + [current[1]]))
+
+        frontier = frontier[:k]
+
+    return None
 
 
 def main():

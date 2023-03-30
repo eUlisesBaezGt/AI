@@ -11,27 +11,28 @@ class Graph:
         self.content[destiny].append((origin, weight))
 
 
-def BranchAndBound(graph, heuristics, start="Neamt", goal="Bucharest"):
-    if start == goal:
-        return [start]
-
-    frontier = [start]
-    path = []
+def BranchAndBound(graph, heuristics, start="Arad", goal="Bucharest"):
+    frontier = [(0, start, [])]
+    explored = set()
 
     while frontier:
+        frontier.sort(key=lambda node: node[0])
         current = frontier.pop(0)
-        path.append(current)
 
-        for neighbor, weight in graph.content[current]:
-            if neighbor == goal:
-                path.append(neighbor)
-                return path
-            frontier.append(neighbor)
+        if current[1] == goal:
+            return current[2] + [current[1]]
 
-        for node, weight in heuristics.content[current]:
-            if node == goal:
-                path.append(node)
-                return path
+        if current[1] not in explored:
+            explored.add(current[1])
+            for next_node, _ in graph.content[current[1]]:
+                for i in graph.content[current[1]]:
+                    if i[0] == next_node:
+                        cost = current[0] + int(i[1])
+                frontier.append((cost, next_node, current[2] + [current[1]]))
+
+        frontier = frontier[:1]
+
+    return None
 
 
 def main():

@@ -11,8 +11,31 @@ class Graph:
         self.content[destiny].append((origin, weight))
 
 
-def WeightedAStarSearch(graph, heuristics, start="Neamt", goal="Bucharest"):
-    
+def WeightedAStarSearch(graph, heuristcs, origin="Arad", destination="Bucharest"):
+    costs = {origin: 0}
+    paths = {origin: []}
+    frontier = [origin]
+    W = 1.3
+
+    while frontier:
+        frontier.sort(key=lambda node: costs[node] + int(heuristcs.content[node][0][1]))
+        current = frontier.pop(0)
+
+        if current == destination:
+            # PRINT COST 
+            print(f"Cost: {costs[current]}")
+            return paths[current] + [current]
+
+        for next_node, _ in graph.content[current]:
+            for i in graph.content[current]:
+                if i[0] == next_node:
+                    cost = costs[current] + W*int(i[1])
+                if next_node not in costs or cost < costs[next_node]:
+                    costs[next_node] = cost
+                    paths[next_node] = paths[current] + [current]
+                    if next_node not in frontier:
+                        frontier.append(next_node)
+    return None
 
 
 def main():
