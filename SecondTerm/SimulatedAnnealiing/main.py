@@ -11,6 +11,8 @@ import networkx as nx
 import random
 import math
 import matplotlib.pyplot as plt
+
+
 # from networkx.algorithms import approximation as approx
 
 
@@ -71,6 +73,7 @@ G.add_weighted_edges_from({
 
 })
 
+
 # print(G.nodes())
 
 # print(G.edges())
@@ -88,7 +91,7 @@ def generate_initial_solution(start, g):
 
 
 def generate_random_swap_solution(current_solution):
-    indexes = random.sample(range(1, len(current_solution)-1), 2)
+    indexes = random.sample(range(1, len(current_solution) - 1), 2)
     value1 = current_solution[indexes[0]]
     value2 = current_solution[indexes[1]]
 
@@ -98,8 +101,18 @@ def generate_random_swap_solution(current_solution):
     return swapped_solution
 
 
+def get_solution_cost(solution):
+    cost = 0
+    for city in range(len(solution) - 1):
+        cost += G[solution[city]][solution[city + 1]]['weight']
 
-def simulated_annealing(initial_solution, initial_temperature, stop_temperature, iterations, percentage_to_reduce_temperature):
+    # Calculate last city to first city
+    cost += G[solution[-2]][solution[-1]]['weight']
+    return cost
+
+
+def simulated_annealing(initial_solution, initial_temperature, stop_temperature, iterations,
+                        percentage_to_reduce_temperature):
     temperature = initial_temperature
 
     current_solution = initial_solution
@@ -107,9 +120,11 @@ def simulated_annealing(initial_solution, initial_temperature, stop_temperature,
     while temperature >= stop_temperature:
         for iteration in range(iterations):
             # Generate a random selected solution
-            new_ranodm_solution = generate_random_swap_solution(
+            new_random_solution = generate_random_swap_solution(
                 current_solution)
-            print(new_ranodm_solution)
+            print(new_random_solution)
+            current_solution_cost = get_solution_cost(current_solution)
+            new_solution_cost = get_solution_cost(new_random_solution)
             break
         break
 
