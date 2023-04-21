@@ -16,20 +16,20 @@ import matplotlib.pyplot as plt
 # from networkx.algorithms import approximation as approx
 
 
-def print_graph(G):
+def print_graph(g):
     # nodes
-    pos = nx.spring_layout(G, seed=42)
-    nx.draw_networkx_nodes(G, pos, node_color='blue', node_size=5000)
-    nx.draw_networkx_labels(G, pos, font_size=10,
+    pos = nx.spring_layout(g, seed=42)
+    nx.draw_networkx_nodes(g, pos, node_color='blue', node_size=5000)
+    nx.draw_networkx_labels(g, pos, font_size=10,
                             font_family="sans-serif", font_color='white')
 
     # edges
     nx.draw_networkx_edges(
-        G, pos, edgelist=G.edges, width=6, alpha=1, edge_color="black", style="dashed"
+        g, pos, edgelist=g.edges, width=6, alpha=1, edge_color="black", style="dashed"
     )
-    edge_labels = nx.get_edge_attributes(G, "weight")
+    edge_labels = nx.get_edge_attributes(g, "weight")
     nx.draw_networkx_edge_labels(
-        G, pos, edge_labels, font_size=10, font_color='red')
+        g, pos, edge_labels, font_size=10, font_color='red')
 
     # ploting
     ax = plt.gca()
@@ -83,10 +83,14 @@ G.add_weighted_edges_from({
 
 def generate_initial_solution(start, g):
     # COMPREHENSIVE LIST
-    connections = [edges[1] for edges in G.edges() if edges[0] == start]
+    connections = [edges[1] for edges in g.edges() if edges[0] == start]
     connections.insert(0, start)
     connections.append(start)
-    print(connections)
+
+    for city in g.nodes():
+        if city not in connections:
+            return []
+    # (connections)
     return connections
 
 
@@ -103,12 +107,17 @@ def generate_random_swap_solution(current_solution):
 
 def get_solution_cost(solution):
     cost = 0
+    # print('solution = ', solution)
     for city in range(len(solution) - 1):
+        # print('city 1 = ', solution[city])
+        # print('city 2 = ', solution[city + 1])
         cost += G[solution[city]][solution[city + 1]]['weight']
-
-    # Calculate last city to first city
-    cost += G[solution[-2]][solution[-1]]['weight']
     return cost
+
+
+def decrease_temperature(temperature, percentage_to_reduce_temperature):
+    decreased_value = temperature * (percentage_to_reduce_temperature / 100)
+    return temperature - decreased_value
 
 
 def simulated_annealing(initial_solution, initial_temperature, stop_temperature, iterations,
@@ -116,29 +125,49 @@ def simulated_annealing(initial_solution, initial_temperature, stop_temperature,
     temperature = initial_temperature
 
     current_solution = initial_solution
+    first_solution_cost = get_solution_cost(current_solution)
+    current_solution_cost = 0
 
-    while temperature >= stop_temperature:
+    while temperature > stop_temperature:
         for iteration in range(iterations):
             # Generate a random selected solution
             new_random_solution = generate_random_swap_solution(
                 current_solution)
-            print(new_random_solution)
+            # print(new_random_solution)
             current_solution_cost = get_solution_cost(current_solution)
             new_solution_cost = get_solution_cost(new_random_solution)
-            break
-        break
+            # print('current_solution_cost = ', current_solution_cost)
+            # print('new_solution_cost = ', new_solution_cost)
+            difference = new_solution_cost - current_solution_cost
+            # print('difference = ', difference)
+            if difference >= 0:
+                current_solution = new_random_solution
+            else:
+                uniform_random_number = random.uniform(0, 1)
+                # print('uniform_random_number = ', uniform_random_number)
+
+                acceptance_probability = math.exp(difference / temperature)
+                # print('acceptance_probability = ', acceptance_probability)
+
+                if uniform_random_number <= acceptance_probability:
+                    current_solution = new_random_solution
+        alpha = decrease_temperature(temperature, percentage_to_reduce_temperature)
+        temperature = int(temperature - alpha)
+    return current_solution, first_solution_cost, current_solution_cost
 
 
 def main():
-    initial_solution = generate_initial_solution('Fagaras', 0)
-    print(initial_solution)
+    initial_solution = generate_initial_solution('Fagaras', G)
+    # print(initial_solution)
     initial_temperature = 100
     stop_temperature = 0
     iterations = 5
     percentage_to_reduce_temperature = 2
-
-    result = simulated_annealing(initial_solution, initial_temperature,
-                                 stop_temperature, iterations, percentage_to_reduce_temperature)
+    result = simulated_annealing(initial_solution, initial_temperature, stop_temperature,
+                                 iterations, percentage_to_reduce_temperature)
+    print('Initial solution = ', result[0])
+    print('Initial solution cost = ', result[1])
+    print('Final solution cost = ', result[2])
 
 
 if __name__ == "__main__":
