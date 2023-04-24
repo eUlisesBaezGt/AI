@@ -1,30 +1,21 @@
-class Graph:
-    def __init__(self):
-        self.content = {}
+from queue import PriorityQueue
 
-    def new_edge(self, origin, destiny, weight):
-        if origin not in self.content:
-            self.content[origin] = []
-        if destiny not in self.content:
-            self.content[destiny] = []
-        self.content[origin].append((destiny, weight))
-        self.content[destiny].append((origin, weight))
+from KAGraph import KAGraph as KAg
 
 
 def greedy_best_first_search(graph, heuristics, start, goal):
     if start == goal:
         return [start]
 
-    frontier = []
+    frontier = PriorityQueue()
     explored = set()
     parents = {}
 
-    frontier.append(start)
+    frontier.put(start, 0)
     parents[start] = None
 
-    while frontier:
-        frontier.sort(key=lambda x: heuristics.content[x][0][1])
-        current = frontier.pop(0)
+    while not frontier.empty():
+        current = frontier.get()
 
         if current == goal:
             path = []
@@ -35,32 +26,32 @@ def greedy_best_first_search(graph, heuristics, start, goal):
 
         explored.add(current)
 
-        for neighbor, _ in graph.content[current]:
-            if neighbor not in explored and neighbor not in frontier:
-                frontier.append(neighbor)
+        for neighbor in graph.get_neighbors(current):
+            if neighbor not in explored and neighbor not in frontier.queue:
+                frontier.put(neighbor, heuristics.get_weight(neighbor, goal))
                 parents[neighbor] = current
 
     return None
 
 
 def main():
-    graph = Graph()
+    graph = KAg.Graph()
     with open("data.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
-        origin, destiny, weight = lines[i].split()
-        graph.new_edge(origin, destiny, weight)
+        origin, destination, weight = lines[i].split()
+        graph.add_edge(origin, destination, weight)
 
-    heuristics = Graph()
+    heuristics = KAg.Graph()
     with open("heuristics.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
-        origin, destiny, weight = lines[i].split()
-        heuristics.new_edge(origin, destiny, weight)
+        origin, destination, weight = lines[i].split()
+        heuristics.add_edge(origin, destination, weight)
 
-    path = greedy_best_first_search(graph, heuristics, "Timisoara", "Bucharest")
+    path = greedy_best_first_search(graph, heuristics, "Arad", "Bucharest")
 
     print(f"Path: {path}")
 

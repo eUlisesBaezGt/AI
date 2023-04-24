@@ -1,14 +1,6 @@
-class Graph:
-    def __init__(self):
-        self.content = {}
+from random import shuffle
 
-    def new_edge(self, origin, destiny, weight):
-        if origin not in self.content:
-            self.content[origin] = []
-        if destiny not in self.content:
-            self.content[destiny] = []
-        self.content[origin].append((destiny, weight))
-        self.content[destiny].append((origin, weight))
+from KAGraph import KAGraph as KAg
 
 
 def StochasticHillClimbing(graph, heuristcs, origin="Arad", destination="Bucharest"):
@@ -22,36 +14,39 @@ def StochasticHillClimbing(graph, heuristcs, origin="Arad", destination="Buchare
             print(f"Cost: {costs[current]}")
             return paths[current]
 
-        for destiny, weight in graph.content[current]:
+        for destiny in graph.get_neighbors(current):
+            weight = graph.get_weight(current, destiny)
             if destiny not in costs or costs[current] + int(weight) < costs[destiny]:
                 costs[destiny] = costs[current] + int(weight)
                 paths[destiny] = paths[current] + [destiny]
                 frontier.append(destiny)
 
-        frontier.sort(key=lambda x: costs[x] + int(heuristcs.content[x][0][1]))
-        frontier = frontier[:1]
+        shuffle(frontier)
+        frontier.sort(key=lambda x: costs[x] + int(heuristcs.nodes[current][list(heuristcs.get_neighbors(current))[0]]))
+        frontier = frontier[:10]
 
     return None
 
 
 def main():
-    graph = Graph()
+    graph = KAg.Graph()
     with open("data.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
         origin, destiny, weight = lines[i].split()
-        graph.new_edge(origin, destiny, weight)
+        graph.add_edge(origin, destiny, weight)
 
-    heuristics = Graph()
+    heuristics = KAg.Graph()
     with open("heuristics.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
         origin, destiny, weight = lines[i].split()
-        heuristics.new_edge(origin, destiny, weight)
+        heuristics.add_edge(origin, destiny, weight)
 
     path = StochasticHillClimbing(graph, heuristics)
+    path.insert(0, "Arad")
 
     print(f"Path: {path}")
 

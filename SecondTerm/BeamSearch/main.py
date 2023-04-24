@@ -1,59 +1,63 @@
-class Graph:
-    def __init__(self):
-        self.content = {}
-
-    def new_edge(self, origin, destiny, weight):
-        if origin not in self.content:
-            self.content[origin] = []
-        if destiny not in self.content:
-            self.content[destiny] = []
-        self.content[origin].append((destiny, weight))
-        self.content[destiny].append((origin, weight))
+from KAGraph import KAGraph as KAg
+from queue import PriorityQueue
 
 
-def BeamSearch(graph, heuristics, start="Arad", goal="Bucharest"):
-    k = int(input("Enter the number of nodes to be expanded: "))
-    frontier = [(0, start, [])]
+def BeamSearch(graph, heuristics, beam_width=2, start='Arad', goal='Bucharest'):
+    if start == goal:
+        return [start]
+
+    frontier = PriorityQueue()
     explored = set()
+    parents = {}
 
-    while frontier:
-        frontier.sort(key=lambda node: node[0])
-        current = frontier.pop(0)
+    frontier.put((start, 0))
+    parents[start] = None
 
-        if current[1] == goal:
-            return current[2] + [current[1]]
+    while not frontier.empty():
+        candidates = []
+        for _ in range(beam_width):
+            if not frontier.empty():
+                candidates.append(frontier.get())
 
-        if current[1] not in explored:
-            explored.add(current[1])
-            for next_node, _ in graph.content[current[1]]:
-                for i in graph.content[current[1]]:
-                    if i[0] == next_node:
-                        cost = current[0] + int(i[1])
-                frontier.append((cost, next_node, current[2] + [current[1]]))
+        for candidate, _ in candidates:
+            if candidate == goal:
+                path = []
+                while candidate is not None:
+                    path.append(candidate)
+                    candidate = parents[candidate]
+                return path[::-1]
 
-        frontier = frontier[:k]
+            explored.add(candidate)
+
+            for neighbor in graph.get_neighbors(candidate):
+                if neighbor not in explored:
+                    new_cost = heuristics.get_weight(neighbor, goal)
+                    priority = new_cost
+                    frontier.put((neighbor, priority))
+                    parents[neighbor] = candidate
 
     return None
 
 
 def main():
-    graph = Graph()
+    graph = KAg.Graph()
     with open("data.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
         origin, destiny, weight = lines[i].split()
-        graph.new_edge(origin, destiny, weight)
+        graph.add_edge(origin, destiny, weight)
 
-    heuristics = Graph()
+    heuristics = KAg.Graph()
     with open("heuristics.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
         origin, destiny, weight = lines[i].split()
-        heuristics.new_edge(origin, destiny, weight)
+        heuristics.add_edge(origin, destiny, weight)
 
-    path = BeamSearch(graph, heuristics)
+    k = int(input("Beam width: "))
+    path = BeamSearch(graph, heuristics, k)
 
     print(f"Path: {path}")
 

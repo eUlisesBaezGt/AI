@@ -1,59 +1,37 @@
-class Graph:
-    def __init__(self):
-        self.content = {}
-
-    def new_edge(self, origin, destiny, weight):
-        if origin not in self.content:
-            self.content[origin] = []
-        if destiny not in self.content:
-            self.content[destiny] = []
-        self.content[origin].append((destiny, weight))
-        self.content[destiny].append((origin, weight))
+from queue import PriorityQueue
+from KAGraph import KAGraph as KAg
 
 
-def BranchAndBound(graph, heuristics, start="Arad", goal="Bucharest"):
-    frontier = [(0, start, [])]
-    explored = set()
-
-    while frontier:
-        frontier.sort(key=lambda node: node[0])
-        current = frontier.pop(0)
-
-        if current[1] == goal:
-            return current[2] + [current[1]]
-
-        if current[1] not in explored:
-            explored.add(current[1])
-            for next_node, _ in graph.content[current[1]]:
-                for i in graph.content[current[1]]:
-                    if i[0] == next_node:
-                        cost = current[0] + int(i[1])
-                frontier.append((cost, next_node, current[2] + [current[1]]))
-
-        frontier = frontier[:1]
-
-    return None
+def BranchAndBound(graph, origin="Arad", destination="Bucharest"):
+    visited = set()
+    frontier = PriorityQueue()
+    # Tuple contains the current path cost, current node, and the path so far
+    frontier.put((0, origin, [origin]))
+    while not frontier.empty():
+        cost, node, path = frontier.get()
+        if node == destination:
+            return cost, path
+        visited.add(node)
+        for neighbor, weight in graph.nodes[node].items():
+            if neighbor not in visited:
+                new_path = path + [neighbor]
+                bound = cost + int(weight)
+                frontier.put((bound, neighbor, new_path))
+    return None, None
 
 
 def main():
-    graph = Graph()
+    graph = KAg.Graph()
     with open("data.txt") as file:
         lines = file.readlines()
 
     for i in range(1, len(lines)):
-        origin, destiny, weight = lines[i].split()
-        graph.new_edge(origin, destiny, weight)
+        origin, destination, weight = lines[i].split()
+        graph.add_edge(origin, destination, weight)
 
-    heuristics = Graph()
-    with open("heuristics.txt") as file:
-        lines = file.readlines()
+    cost, path = BranchAndBound(graph)
 
-    for i in range(1, len(lines)):
-        origin, destiny, weight = lines[i].split()
-        heuristics.new_edge(origin, destiny, weight)
-
-    path = BranchAndBound(graph, heuristics)
-
+    print(f"Cost: {cost}")
     print(f"Path: {path}")
 
 
