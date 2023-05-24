@@ -180,7 +180,6 @@ def plot_histograms(dataset):
 
 
 # Compute the frequency counts per feature per dataset
-# Compute the frequency counts per feature per dataset
 def freq_counts(dataset):
     print("Computing frequency counts")
 
@@ -296,7 +295,9 @@ columnas = ["Rain_id", "Rain_main", "Rain_description"]
 def reemplazar_con_promedio(dataset, columnas):
     dataset_copy = dataset.copy()
     for columna in columnas:
-        if dataset_copy[columna].dtype == np.number:
+        if np.issubdtype(
+            dataset_copy[columna].dtype, np.floating
+        ):  # Changed np.number to np.floating
             valor_promedio = dataset_copy[columna].mean()
             dataset_copy[columna].fillna(valor_promedio, inplace=True)
     return dataset_copy
@@ -304,7 +305,9 @@ def reemplazar_con_promedio(dataset, columnas):
 
 new_dataset_promedio = reemplazar_con_promedio(new_dataset, columnas)
 # analysis_plots(new_dataset_promedio)
+print("Reemplazando con promedio")
 print(new_dataset_promedio)
+print("---------------------")
 
 
 # Para las columnas categóricas, es posible que desee utilizar la moda (el valor más frecuente):
@@ -319,7 +322,16 @@ def reemplazar_con_moda(dataset, columnas):
 
 new_dataset_moda = reemplazar_con_moda(new_dataset, columnas)
 # analysis_plots(new_dataset_moda)
+# print(new_dataset_moda)
+print("Reemplazando con moda")
 print(new_dataset_moda)
+print("---------------------")
+
+# new_mixed = new_dataset.copy()
+# new_mixed["Rain_id"].fillna(new_mixed["Rain_id"].mean(), inplace=True)
+# new_mixed["Rain_main"].fillna(new_mixed["Rain_main"].mode()[0], inplace=True)
+# new_mixed["Rain_description"].fillna(new_mixed["Rain_description"].mode()[0], inplace=True)
+# print(new_mixed)
 
 
 # 2) Completar los valores de las celdas faltantes con el valor de la celda más cercana de su respectiva columna
@@ -332,7 +344,10 @@ def reemplazar_con_cercano(dataset, columnas):
 
 new_dataset_cercano = reemplazar_con_cercano(new_dataset, columnas)
 # analysis_plots(new_dataset_cercano)
-print(new_dataset_cercano)
+# print(new_dataset_cercano)
+print("Reemplazando con cercano")
+print(new_dataset)
+print("---------------------")
 
 
 # 3) Eliminar todos los registros/observaciones que presente al menos un valor NaN en cualquiera de las características/columnas
@@ -344,4 +359,7 @@ def eliminar_filas_nan(dataset, columnas):
 
 new_dataset_sin_nan = eliminar_filas_nan(new_dataset, columnas)
 # analysis_plots(new_dataset_sin_nan)
+# print(new_dataset_sin_nan)
+print("Eliminando filas con NaN")
 print(new_dataset_sin_nan)
+print("---------------------")
