@@ -339,6 +339,7 @@ def reemplazar_con_cercano(dataset, columnas):
     dataset_copy = dataset.copy()
     for columna in columnas:
         dataset_copy[columna].fillna(method="ffill", inplace=True)
+        dataset_copy[columna].fillna(method="bfill", inplace=True)  # Added this line
     return dataset_copy
 
 
