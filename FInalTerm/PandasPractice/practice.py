@@ -294,27 +294,30 @@ columnas = ['Rain_id', 'Rain_main', 'Rain_description']
 def reemplazar_con_promedio(dataset, columnas):
     dataset_copy = dataset.copy()
     for columna in columnas:
-        if dataset_copy[columna].dtype == np.number:
+        if dataset_copy[columna].dtype in [np.float64, np.int64]:
             valor_promedio = dataset_copy[columna].mean()
             dataset_copy[columna].fillna(valor_promedio, inplace=True)
+            dataset_copy[columna] = dataset_copy[columna].astype(dataset[columna].dtype)
     return dataset_copy
 
 new_dataset_promedio = reemplazar_con_promedio(new_dataset, columnas)
-# analysis_plots(new_dataset_promedio)
+print("Reemplazando por media")
 print(new_dataset_promedio)
+print("====================")
 
 # Para las columnas categóricas, es posible que desee utilizar la moda (el valor más frecuente):
 def reemplazar_con_moda(dataset, columnas):
     dataset_copy = dataset.copy()
     for columna in columnas:
-        if dataset_copy[columna].dtype == object:  # Changed np.object to object
+        if dataset_copy[columna].dtype == object:
             valor_moda = dataset_copy[columna].mode()[0]
             dataset_copy[columna].fillna(valor_moda, inplace=True)
     return dataset_copy
 
 new_dataset_moda = reemplazar_con_moda(new_dataset, columnas)
-# analysis_plots(new_dataset_moda)
+print("Reemplazando por moda")
 print(new_dataset_moda)
+print("====================")
 
 # 2) Completar los valores de las celdas faltantes con el valor de la celda más cercana de su respectiva columna
 def reemplazar_con_cercano(dataset, columnas):
@@ -324,8 +327,9 @@ def reemplazar_con_cercano(dataset, columnas):
     return dataset_copy
 
 new_dataset_cercano = reemplazar_con_cercano(new_dataset, columnas)
-# analysis_plots(new_dataset_cercano)
+print("Reemplazando por cercano")
 print(new_dataset_cercano)
+print("====================")
 
 # 3) Eliminar todos los registros/observaciones que presente al menos un valor NaN en cualquiera de las características/columnas
 def eliminar_filas_nan(dataset, columnas):
@@ -334,5 +338,6 @@ def eliminar_filas_nan(dataset, columnas):
     return dataset_copy
 
 new_dataset_sin_nan = eliminar_filas_nan(new_dataset, columnas)
-# analysis_plots(new_dataset_sin_nan)
+print("Reemplazando nulos")
 print(new_dataset_sin_nan)
+print("====================")
