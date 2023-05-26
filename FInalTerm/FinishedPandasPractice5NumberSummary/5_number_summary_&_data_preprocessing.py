@@ -5,7 +5,7 @@
 # 
 # This tutorial is meant to help to load, visualise and analyse datasets in order to prepare them for the data pre-processing
 
-# In[1]:
+# In[53]:
 
 
 import matplotlib as mpl
@@ -19,7 +19,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # ## General variables configuration
 
-# In[2]:
+# In[54]:
 
 
 # dataset name and location
@@ -55,7 +55,7 @@ formated_features_names = []
 
 # ## Functions
 
-# In[3]:
+# In[55]:
 
 
 # Load all the datasets
@@ -259,26 +259,26 @@ def plot_nullness():
 
 # ## Load the dataset and visualise it
 
-# In[4]:
+# In[56]:
 
 
 load_dataset()
 
 
-# In[5]:
+# In[57]:
 
 
 # get a quick view of Bristol data
 original_data.head()
 
 
-# In[6]:
+# In[58]:
 
 
 original_data['dt_iso']
 
 
-# In[7]:
+# In[59]:
 
 
 #see the name of the columns
@@ -287,28 +287,28 @@ original_data.columns
 
 # ## Data pre-processing
 
-# In[8]:
+# In[60]:
 
 
 # Generate the new dataset
 build_new_dataset()
 
 
-# In[9]:
+# In[61]:
 
 
 # view the dataset processed
 new_dataset.head()
 
 
-# In[10]:
+# In[62]:
 
 
 # Perform all the analysis
 analysis_plots(new_dataset)
 
 
-# In[11]:
+# In[63]:
 
 
 # Plot features nullness(nans)
@@ -317,19 +317,19 @@ plot_nullness()
 
 # ## Ajustes
 
-# In[12]:
+# In[64]:
 
 
 new_dataset.iloc[4502, 9]  # Búscate uno de los que si tienen número
 
 
-# In[13]:
+# In[65]:
 
 
 columnas = ['Rain_id', 'Rain_main', 'Rain_description']
 
 
-# In[19]:
+# In[66]:
 
 
 # 1) Completar los valores de las celdas faltantes con el valor promedio de los registros respectivos de su columna
@@ -353,7 +353,7 @@ print("====================")
 analysis_plots(new_dataset_promedio)
 
 
-# In[20]:
+# In[67]:
 
 
 # Para las columnas categóricas, es posible que desee utilizar la moda (el valor más frecuente):
@@ -374,24 +374,16 @@ print("====================")
 analysis_plots(new_dataset_moda)
 
 
-# In[22]:
+# In[68]:
 
 
-# Combinar los anteriores dos métodos
-def reemplazar_con_promedio_moda(dataset, columnas):
-    dataset_copy = dataset.copy()
-    for columna in columnas:
-        if dataset_copy[columna].dtype == object:
-            valor_moda = dataset_copy[columna].mode()[0]
-            dataset_copy[columna].fillna(valor_moda, inplace=True)
-        else:
-            valores_columna = dataset_copy[columna].dropna().astype(float)
-            promedio = valores_columna.mean()
-            dataset_copy[columna].fillna(promedio, inplace=True)
-    return dataset_copy
+def reemplazar_con_promedio_moda(dataset):
+    dataset = reemplazar_con_promedio(dataset)
+    columnas = ['Rain_main', 'Rain_description']
+    dataset = reemplazar_con_moda(dataset, columnas)
+    return dataset
 
-
-new_dataset_promedio_moda = reemplazar_con_promedio_moda(new_dataset, columnas)
+new_dataset_promedio_moda = reemplazar_con_promedio_moda(new_dataset)
 print("Reemplazando por híbrido")
 print(new_dataset_promedio_moda)
 print("====================")
@@ -404,7 +396,7 @@ analysis_plots(new_dataset_promedio_moda)
 # por lo que se debe usar el valor que más se repite. Se sugiere usar cuando los valores faltantes son pocos.
 
 
-# In[17]:
+# In[69]:
 
 
 # 2) Completar los valores de las celdas faltantes con el valor de la celda más cercana de su respectiva columna
@@ -453,7 +445,7 @@ analysis_plots(new_dataset_cercano)
 # cuando los valores faltantes son pocos.
 
 
-# In[18]:
+# In[70]:
 
 
 # 3) Eliminar todos los registros/observaciones que presente al menos un valor NaN en cualquiera de las características/columnas
