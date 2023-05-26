@@ -5,7 +5,7 @@
 # 
 # This tutorial is meant to help to load, visualise and analyse datasets in order to prepare them for the data pre-processing
 
-# In[53]:
+# In[1]:
 
 
 import matplotlib as mpl
@@ -19,7 +19,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # ## General variables configuration
 
-# In[54]:
+# In[2]:
 
 
 # dataset name and location
@@ -55,7 +55,7 @@ formated_features_names = []
 
 # ## Functions
 
-# In[55]:
+# In[3]:
 
 
 # Load all the datasets
@@ -259,26 +259,26 @@ def plot_nullness():
 
 # ## Load the dataset and visualise it
 
-# In[56]:
+# In[4]:
 
 
 load_dataset()
 
 
-# In[57]:
+# In[5]:
 
 
 # get a quick view of Bristol data
 original_data.head()
 
 
-# In[58]:
+# In[6]:
 
 
 original_data['dt_iso']
 
 
-# In[59]:
+# In[7]:
 
 
 #see the name of the columns
@@ -287,28 +287,28 @@ original_data.columns
 
 # ## Data pre-processing
 
-# In[60]:
+# In[8]:
 
 
 # Generate the new dataset
 build_new_dataset()
 
 
-# In[61]:
+# In[9]:
 
 
 # view the dataset processed
 new_dataset.head()
 
 
-# In[62]:
+# In[10]:
 
 
 # Perform all the analysis
 analysis_plots(new_dataset)
 
 
-# In[63]:
+# In[11]:
 
 
 # Plot features nullness(nans)
@@ -317,19 +317,19 @@ plot_nullness()
 
 # ## Ajustes
 
-# In[64]:
+# In[12]:
 
 
 new_dataset.iloc[4502, 9]  # Búscate uno de los que si tienen número
 
 
-# In[65]:
+# In[13]:
 
 
 columnas = ['Rain_id', 'Rain_main', 'Rain_description']
 
 
-# In[66]:
+# In[14]:
 
 
 # 1) Completar los valores de las celdas faltantes con el valor promedio de los registros respectivos de su columna
@@ -353,7 +353,7 @@ print("====================")
 analysis_plots(new_dataset_promedio)
 
 
-# In[67]:
+# In[15]:
 
 
 # Para las columnas categóricas, es posible que desee utilizar la moda (el valor más frecuente):
@@ -374,7 +374,7 @@ print("====================")
 analysis_plots(new_dataset_moda)
 
 
-# In[68]:
+# In[16]:
 
 
 def reemplazar_con_promedio_moda(dataset):
@@ -396,7 +396,7 @@ analysis_plots(new_dataset_promedio_moda)
 # por lo que se debe usar el valor que más se repite. Se sugiere usar cuando los valores faltantes son pocos.
 
 
-# In[69]:
+# In[23]:
 
 
 # 2) Completar los valores de las celdas faltantes con el valor de la celda más cercana de su respectiva columna
@@ -413,23 +413,26 @@ new_dataset_cercano1 = reemplazar_con_cercano(new_dataset, columnas)
 # Volver a revisar si quedan nulos y avanzar hasta entonctrar un valor no nulo y ponerlo en todas las filas anteriores
 # Iterar sobre las columnas de interés y y buscar el primer valor no nulo
 def primer_no_nulo(dataset, columnas):
+    valores = []
     dataset_copy = dataset.copy()
     for columna in columnas:
         for i in range(len(dataset_copy[columna])):
             if not pd.isnull(dataset_copy[columna][i]):
-                return dataset_copy[columna][i]
+                valores.append(dataset_copy[columna][i])
+                break
+    print(valores)
+    return valores
 
 
 primer_valor_no_nulo = primer_no_nulo(new_dataset, columnas)
 
 
 # Iterar sobre las columnas de interés y y ya teniendo el primer valor no nulo, reemplazar los nulos por ese valor
-def reemplazar_nulos(dataset, columnas, valor):
+def reemplazar_nulos(dataset, columnas, valores):
     dataset_copy = dataset.copy()
-    for columna in columnas:
-        dataset_copy[columna].fillna(valor, inplace=True)
+    for i in range(len(columnas)):
+        dataset_copy[columnas[i]].fillna(valores[i], inplace=True)
     return dataset_copy
-
 
 new_dataset_cercano = reemplazar_nulos(new_dataset_cercano1, columnas, primer_valor_no_nulo)
 
@@ -445,7 +448,7 @@ analysis_plots(new_dataset_cercano)
 # cuando los valores faltantes son pocos.
 
 
-# In[70]:
+# In[18]:
 
 
 # 3) Eliminar todos los registros/observaciones que presente al menos un valor NaN en cualquiera de las características/columnas
