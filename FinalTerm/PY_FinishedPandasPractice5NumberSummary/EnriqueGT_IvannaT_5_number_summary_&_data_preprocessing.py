@@ -5,8 +5,6 @@
 # 
 # This tutorial is meant to help to load, visualise and analyse datasets in order to prepare them for the data pre-processing
 
-# In[1]:
-
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
