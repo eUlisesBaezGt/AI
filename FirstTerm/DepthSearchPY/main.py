@@ -1,98 +1,111 @@
-import time
-
 class Graph:
+    """
+    A class to represent a directed weighted graph using adjacency lists.
+    """
     def __init__(self):
+        # Initialize an empty dictionary to store the graph's adjacency list
         self.content = dict()
 
     def new_edge(self, origin, destiny, weight):
+        """
+        Adds a new edge to the graph.
+
+        Parameters:
+        origin (str): The starting node of the edge.
+        destiny (str): The ending node of the edge.
+        weight (int/float): The weight of the edge.
+        """
+        # If the origin or destiny node does not exist, initialize it with an empty list
         if origin not in self.content:
             self.content[origin] = []
         if destiny not in self.content:
             self.content[destiny] = []
+        # Add the edge to the origin node's list
         self.content[origin].append((destiny, weight))
 
     def view_all(self):
+        """
+        Prints all edges in the graph, showing the connections and their weights.
+        """
         print("\n\nGraph:\n------")
         print("ORIGIN -> [(DESTINY, WEIGHT), ...]")
         for origin, destiny in self.content.items():
             print(f"{origin} -> {destiny}")
 
-
 def comp_limited_depth_search(graph):
+    """
+    Completes a limited depth search on the graph and prints the result.
+
+    Parameters:
+    graph (Graph): The graph to perform the search on.
+    """
     print("\n\nLimited Depth Search:\n---------------------")
-    print("Origin: ", end="")
-    origin = input()
-    print("Destiny: ", end="")
-    destiny = input()
+    origin = input("Origin: ")
+    destiny = input("Destiny: ")
     path = limited_depth_search(graph, origin, destiny)
     print("\n\nRESULTS:\n--------")
     print("FROM:", origin)
     print("TO:", destiny)
-    print("\nPATH FOUND:")
     if path:
-        for i in range(len(path)):
-            if i == len(path) - 1:
-                print(path[i])
-            else:
-                print(path[i], end=" -> ")
+        print("\nPATH FOUND:")
+        print(" -> ".join(path))
     else:
         print("No path found")
 
+def limited_depth_search(graph, origin, destiny, limit=9):
+    """
+    Performs a depth-limited search from the origin to the destiny within a given depth limit.
 
-def limited_depth_search(graph, origin, destiny, limit=9):  # Also works with 7,could be an alternative
+    Parameters:
+    graph (Graph): The graph to perform the search on.
+    origin (str): The starting node.
+    destiny (str): The destination node.
+    limit (int): The maximum depth to search (default is 9).
+
+    Returns:
+    list/None: A list of nodes forming the path if found, None otherwise.
+    """
     if origin == destiny:
         return [origin]
     if limit == 0:
         return None
-    for node in graph.content[origin]:
+    for node in graph.content.get(origin, []):
         path = limited_depth_search(graph, node[0], destiny, limit - 1)
         if path:
             return [origin] + path
     return None
 
-
 def main():
-    with open("data.txt", "w") as file:
-        file.write("20 23\n")
-        file.write("Arad Zerind 5\n")
-        file.write("Zerind Oradea 5\n")
-        file.write("Oradea Sibiu 5\n")
-        file.write("Sibiu Fagaras 5\n")
-        file.write("Sibiu RimnicuVilcea 5\n")
-        file.write("Fagaras Bucharest 5\n")
-        file.write("RimnicuVilcea Pitesti 5\n")
-        file.write("RimnicuVilcea Craiova 5\n")
-        file.write("Pitesti Bucharest 5\n")
-        file.write("Craiova Pitesti 5\n")
-        file.write("Arad Sibiu 5\n")
-        file.write("Arad Timisoara 5\n")
-        file.write("Timisoara Lugoj 5\n")
-        file.write("Lugoj Mehadia 5\n")
-        file.write("Mehadia Drobeta 5\n")
-        file.write("Drobeta Craiova 5\n")
-        file.write("Bucharest Giurgiu 5\n")
-        file.write("Bucharest Urziceni 5\n")
-        file.write("Urziceni Hirsova 5\n")
-        file.write("Hirsova Eforie 5\n")
-        file.write("Urziceni Vaslui 5\n")
-        file.write("Vaslui Iasi 5\n")
-        file.write("Iasi Neamt 5\n")
+    """
+    Main function to demonstrate graph functionality and depth-limited search.
+    """
+    # # Writes a predefined graph structure to 'data.txt'
+    # with open("data.txt", "w") as file:
+    #     file.writelines([
+    #         "20 23\n",
+    #         "Arad Zerind 5\n", "Zerind Oradea 5\n", "Oradea Sibiu 5\n",
+    #         "Sibiu Fagaras 5\n", "Sibiu RimnicuVilcea 5\n", "Fagaras Bucharest 5\n",
+    #         "RimnicuVilcea Pitesti 5\n", "RimnicuVilcea Craiova 5\n", "Pitesti Bucharest 5\n",
+    #         "Craiova Pitesti 5\n", "Arad Sibiu 5\n", "Arad Timisoara 5\n",
+    #         "Timisoara Lugoj 5\n", "Lugoj Mehadia 5\n", "Mehadia Drobeta 5\n",
+    #         "Drobeta Craiova 5\n", "Bucharest Giurgiu 5\n", "Bucharest Urziceni 5\n",
+    #         "Urziceni Hirsova 5\n", "Hirsova Eforie 5\n", "Urziceni Vaslui 5\n",
+    #         "Vaslui Iasi 5\n", "Iasi Neamt 5\n"
+    #     ])
 
+    # Initializes a graph and loads edges from 'data.txt'
     graph = Graph()
     with open("data.txt") as file:
         lines = file.readlines()
-    nodes, edges = lines[0].split()
+    for line in lines[1:]:  # Skip the first line as it contains the number of nodes and edges
+        origin, destiny, weight = line.split()
+        graph.new_edge(origin, destiny, int(weight))
 
-    for i in range(1, len(lines)):
-        origin, destiny, weight = lines[i].split()
-        graph.new_edge(origin, destiny, weight)
-
-    # comp_limited_depth_search(graph)
-    graph.view_all()
+    graph.view_all()  # Display the graph
 
     print("\nFINISHED\n")
-    time.sleep(1000)
-
+    
+    comp_limited_depth_search(graph)  # Perform a limited depth search
 
 if __name__ == "__main__":
     main()
