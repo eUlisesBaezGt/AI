@@ -149,7 +149,7 @@ def main():
 
     graph.view_all()  # Display the graph's connections.
 
-    # Ask the user for the start and end nodes for the depth-first search.
+    # Ask the user for the start and end nodes
     start_node = input("\nPlease enter the start node: ")
     end_node = input("Please enter the end node: ")
 
